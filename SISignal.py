@@ -7,8 +7,10 @@ import matplotlib.pyplot as plt
 def si_signal(d: np.array, T: float, a, domain: np.arange):
     index = range(len(d))
     return np.array(
-        [sum([d[m] * a(t - m * T) for m in index])
-        for t in domain]
+        [
+            sum([d[m] * a(t - m * T) for m in index])
+            for t in domain
+        ]
     )
 
 class SISignal:
