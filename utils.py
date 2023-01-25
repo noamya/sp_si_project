@@ -31,6 +31,7 @@ def get_random_sparse_vector(n, d, minv=-1, maxv=1):
     x = np.zeros(n)
     x[np.random.choice(np.arange(0, n), d, replace=False)] = (np.random.random(d)*(maxv - minv) + minv)
     return x
+
 def DFT(x):
     """
     Function to calculate the
