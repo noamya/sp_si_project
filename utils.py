@@ -31,5 +31,15 @@ def get_random_sparse_vector(n, d, minv=-1, maxv=1):
     x = np.zeros(n)
     x[np.random.choice(np.arange(0, n), d, replace=False)] = (np.random.random(d)*(maxv - minv) + minv)
     return x
-
-
+def DFT(x):
+    """
+    Function to calculate the
+    discrete Fourier Transform
+    of a 1D real-valued signal x
+    """
+    N = len(x)
+    n = np.arange(N)
+    k = n.reshape((N, 1))
+    e = np.exp(-2j * np.pi * k * n / N)
+    X = np.dot(e, x)
+    return X
