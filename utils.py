@@ -108,5 +108,15 @@ def project_into_si_signal(x, T_res, s, T):
     return sp.signal.oaconvolve(dn_delta_train, s, mode="same")
 
 
-
-
+def DFT(x):
+    """
+    Function to calculate the
+    discrete Fourier Transform
+    of a 1D real-valued signal x
+    """
+    N = len(x)
+    n = np.arange(N)
+    k = n.reshape((N, 1))
+    e = np.exp(-2j * np.pi * k * n / N)
+    X = np.dot(e, x)
+    return X
