@@ -21,7 +21,6 @@ class SpamsOmpSolver(object):
 
     def solve_many(self, Y):
         """
-
         :param Y: 2D array of shape MxK Where K is the number of problems to solve
         :return: X: 2D array of size NxK with every column sparse
         """
