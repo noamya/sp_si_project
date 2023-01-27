@@ -77,17 +77,24 @@ def calculate_correction_filter(s, T_res, T_sample, M):
     """
     rss = sp.signal.correlate(s, s, mode="full")
     assert np.isclose(rss[len(rss)//2], np.sum(s*s))
-    print((np.arange(-s.size+1, s.size)*T_res).shape, rss.shape)
     interpolator = sp.interpolate.interp1d(np.arange(-s.size+1, s.size)*T_res, rss)
     rnt = interpolator(np.arange(0, (s.size-1)*T_res, T_sample))
-    R = dtft(np.append(rnt[::-1], rnt[1:]), np.arange(-rnt.size, rnt.size))
+    R = dtft(np.append(rnt[::-1], rnt[1:]), np.arange(-rnt.size+1, rnt.size))
     H = 1/R
     dfilter_range = np.arange(-M, M+1)
     return idtft(dfilter_range, H)
 
 
 def project_into_si_signal(x, T_res, s, T):
-    xs = sp.signal.oaconvolve(x, s, mode='same') * T_res  # Multiply by T0 to account for resolution
+    """
+    Project a signal x into SI space with generator s. Creates the closest SI signal to x in L2.
+    :param x: The signal
+    :param T_res: The resolution at which it is given
+    :param s: the generator of the SI space
+    :param T: The rate of innovation of the SI space
+    :return: A signal
+    """
+    xs = sp.signal.oaconvolve(x, s, mode='same')
     interpolator = sp.interpolate.interp1d(
         np.arange(len(xs))*T_res,
         xs,
@@ -96,12 +103,12 @@ def project_into_si_signal(x, T_res, s, T):
     )
     sample_times = np.arange(0, T_res*len(x), T)
     samples_xs = interpolator(sample_times)
-    print(s, T_res, T)
     correction_filter = calculate_correction_filter(s, T_res, T, 30)
     dn = sp.signal.oaconvolve(samples_xs, correction_filter, mode='same')
     T_ratio = T / T_res
+    assert np.isclose(T/T_res, int(T/T_res))
     dn_delta_train = np.zeros(x.size)
-    indices = np.arange(x.size, T_ratio)
+    indices = np.arange(0, x.size, T_ratio)
     assert np.allclose(indices, np.int64(indices))
     indices = np.int64(indices)
     dn_delta_train[indices] = dn
