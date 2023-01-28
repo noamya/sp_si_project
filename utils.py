@@ -50,7 +50,7 @@ def idtft(k_range, X):
     return 1/(2*np.pi) * integral_value
 
 
-def dtft(x, x_range, fft_size=2**15):
+def dtft(x, x_range, fft_size=2**18):
     """
     Performs the dtft of a series x[k]:
     X(w) = sum_[-inf, inf] x[k] * e^(-jwk)
@@ -94,7 +94,7 @@ def project_into_si_signal(x, T_res, s, T):
     :param T: The rate of innovation of the SI space
     :return: A signal
     """
-    xs = sp.signal.oaconvolve(x, s, mode='same')
+    xs = sp.signal.oaconvolve(x, s[::-1], mode='same')
     interpolator = sp.interpolate.interp1d(
         np.arange(len(xs))*T_res,
         xs,
@@ -103,7 +103,7 @@ def project_into_si_signal(x, T_res, s, T):
     )
     sample_times = np.arange(0, T_res*len(x), T)
     samples_xs = interpolator(sample_times)
-    correction_filter = calculate_correction_filter(s, T_res, T, 30)
+    correction_filter = calculate_correction_filter(s, T_res, T, 60)
     dn = sp.signal.oaconvolve(samples_xs, correction_filter, mode='same')
     T_ratio = T / T_res
     assert np.isclose(T/T_res, int(T/T_res))
