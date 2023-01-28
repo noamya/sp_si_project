@@ -14,11 +14,12 @@ def get_test_data(channel="r"):
         raise Exception("Channel must be either 'l' or 'r'")
 
 
-def get_random_pm1_matrix(rows, cols):
+def get_random_pm1_matrix(rows, cols, seed=0):
     """
     Builds a random +-1 matrix in numpy array format with shape (rows, cols)
     """
-    return (-1) ** np.random.randint(0, 2, (rows, cols))
+    np.random.seed(seed)
+    return (-1) ** np.random.randint(0, 2, (rows, cols), )
 
 
 def get_random_sparse_vector(n, d, minv=-1, maxv=1):
