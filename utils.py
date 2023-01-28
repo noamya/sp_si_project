@@ -115,6 +115,31 @@ def project_into_si_signal(x, T_res, s, T):
     return sp.signal.oaconvolve(dn_delta_train, s, mode="same")
 
 
+B_0 = lambda x: sp.signal.bspline(x, 0)
+def create_z_i_t(t, Phi, T, max_k_support, kernel=B_0):
+    """
+    Create z_i(t) coefficients in a given time, the chipping sequence in the RD.
+    :param t: time
+    :param Phi: random +-1 matrix
+    :param T: period time
+    :param max_k_support: maximal k in the kernel's support, to run on all values
+    :param kernel: kernel function to use, default B_0 spline
+    :return: list of all z_i values in time t
+    """
+    N = Phi.shape[1]
+    k_support = np.arange(-max_k_support, max_k_support + 1)
+    inner_sum_by_n = [
+        sum(
+            [
+                kernel(t - n * T - k * N * T)
+                for k in k_support
+            ]
+        )
+        for n in range(N)
+    ]
+    z_i_t = [np.dot(Phi[i, :], inner_sum_by_n) for i in range(Phi.shape[0])]
+    return z_i_t
+
 def DFT(x):
     """
     Function to calculate the
